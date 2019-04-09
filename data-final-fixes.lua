@@ -42,7 +42,7 @@ local get_icons = function(item)
     return icons
 end
 
-local uncompress_icons = function(icons)
+local uncompress_icons = function(icons) -- adding "out-arrow"
     icons[#icons+1] = {icon = "__compressor__/graphics/compress-out-arrow.png"}
     return icons
 end
@@ -56,10 +56,12 @@ for _, group in pairs({"item", "ammo", "module", "rail-planner", "repair-tool", 
     for _, item in pairs(data.raw[group]) do
         --Check for hidden flag to skip later
         local hidden = false
-        for _, flag in ipairs(item.flags) do
-            if flag == "hidden" then hidden = true end
+        if item.flags then
+          for _, flag in pairs (item.flags) do
+              if flag == "hidden" then hidden = true end
+          end
         end
-
+          
         --Don't compress items that only stack to 1
         --Skip items with a super high stack size, Why compress something already this compressed!!!! (also avoids errors)
         --Skip hidden items and creative mode mod items
@@ -136,12 +138,10 @@ for _, group in pairs({"item", "ammo", "module", "rail-planner", "repair-tool", 
                 localised_name = {"recipe-name.uncompress-item", loc_key},
                 localised_description = {"recipe-description.uncompress-item", loc_key},
                 icons = uncompress_icons(icons),
-				icon_size = 32,
+				        icon_size = 32,
                 category = "compression",
                 enabled = false,
-                ingredients = {
-                    {"compressed-"..item.name, 1}
-                },
+                ingredients = {{"compressed-"..item.name, 1},
                 subgroup = "compressor-out-"..sub_group,
                 order = order,
                 result = item.name,
@@ -156,23 +156,31 @@ for _, group in pairs({"item", "ammo", "module", "rail-planner", "repair-tool", 
                 name = "compressed-"..item.name,
                 localised_name = {"item-name.compressed-item", loc_key},
                 localised_description = {"item-description.compressed-item", loc_key},
-                flags = item.flags,
+                flags = item.flags, -- copy or nil if no flags
                 icons = icons,
-				icon_size = 32,
+				        icon_size = 32,
                 subgroup = "compressor-out-"..sub_group,
                 order = order,
                 stack_size = compressed_item_stack_size,
                 inter_item_count = item_count,
             }
             --Insert the recipes and item into tables that we will extend into the game later.
-            compress_recipes[#compress_recipes+1] = compress
-            uncompress_recipes[#uncompress_recipes+1] = uncompress
-            compress_items[#compress_items+1] = new_item
+            --compress_recipes[#compress_recipes+1] = compress
+            table.insert (compress_recipes, compress)
+            
+            --uncompress_recipes[#uncompress_recipes+1] = uncompress
+            table.insert (uncompress_recipes, uncompress)
+              
+            --compress_items[#compress_items+1] = new_item
+            table.insert (compress_items, new_item)
 
             --Get the technology we want to use and add our recipes as unlocks
             local technology = data.raw["technology"][techname] or data.raw["technology"]["compression-1"]
-            technology.effects[#technology.effects+1] = {type = "unlock-recipe", recipe = "uncompress-"..item.name}
-            technology.effects[#technology.effects+1] = {type = "unlock-recipe", recipe = "compress-"..item.name}
+            if not technology.effects then technology.effects = {} end
+            --technology.effects[#technology.effects+1] = {type = "unlock-recipe", recipe = "uncompress-"..item.name}
+            table.insert (technology.effects, {type = "unlock-recipe", recipe = "uncompress-"..item.name})
+            --technology.effects[#technology.effects+1] = {type = "unlock-recipe", recipe = "compress-"..item.name}
+            table.insert (technology.effects, {type = "unlock-recipe", recipe = "compress-"..item.name})
         end
     end
 end
@@ -180,6 +188,18 @@ end
 end
 end
 --Extend our items/recipes for use in the game.
-data:extend(compress_recipes)
-data:extend(uncompress_recipes)
-data:extend(compress_items)
+if #compress_recipes > 0 then -- don't extend empty tables
+  data:extend(compress_recipes)
+else -- catch this situation
+  log ('error: no compress_recipes')
+end
+if #uncompress_recipes > 0 then
+  data:extend(uncompress_recipes)
+else
+  log ('error: no uncompress_recipes')
+end
+if #compress_items > 0 then
+  data:extend(compress_items)
+else
+  log ('error: no compress_items')
+end
