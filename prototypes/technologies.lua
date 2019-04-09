@@ -2,10 +2,16 @@
 --[[Create Technologies]]--
 -------------------------------------------------------------------------------
 --local tech_cat = {ores=1, items=2, tiles=3, ammo=4, entities=5, modules=6, equipment=7}
+
+-- changing 0.16 to 0.17:
+-- "science-pack-1" to "automation-science-pack" (red potion)
+-- "science-pack-2" to "logistic-science-pack" (green potion)
+-- "science-pack-3" to "chemical-science-pack" (blue potion)
+
 local tech1 = {
     --ores
     type = "technology",
-    name = "compression-1",
+    name = "compression", -- first one without index, see 0.17.23
     icon = "__compressor__/graphics/compress-tech.png",
     icon_size = 128,
     order = "z",
@@ -17,7 +23,7 @@ local tech1 = {
         count = 100,
         ingredients =
         {
-            {"science-pack-1",1},
+            {"automation-science-pack",1},
         },
         time = 20
     }
@@ -32,13 +38,13 @@ local tech2 = {
     order = "z",
     effects = {},
     upgrade = true,
-    prerequisites = {"logistics-2", "compression-1"},
+    prerequisites = {"logistics-2", "compression"}, -- first technology without index
     unit =
     {
         count = 150,
         ingredients =
         {
-            {"science-pack-1",1},
+            {"automation-science-pack",1},
         },
         time = 20
     }
@@ -59,7 +65,7 @@ local tech3 = {
         count = 200,
         ingredients =
         {
-            {"science-pack-1",1},
+            {"automation-science-pack",1},
         },
         time = 20
     }
@@ -80,8 +86,8 @@ local tech4 = {
         count = 100,
         ingredients =
         {
-            {"science-pack-1",1},
-            {"science-pack-2",1},
+            {"automation-science-pack",1},
+            {"logistic-science-pack",1},
             {"military-science-pack", 2}
         },
         time = 20
@@ -103,8 +109,8 @@ local tech5 = {
         count = 200,
         ingredients =
         {
-            {"science-pack-1",1},
-            {"science-pack-2",1},
+            {"automation-science-pack",1},
+            {"logistic-science-pack",1},
             {"production-science-pack", 2}
         },
         time = 20
@@ -126,9 +132,9 @@ local tech6 = {
         count = 150,
         ingredients =
         {
-            {"science-pack-1",1},
-            {"science-pack-2",1},
-            {"science-pack-3",1},
+            {"automation-science-pack",1},
+            {"logistic-science-pack", 1},
+            {"chemical-science-pack", 1},
             {"high-tech-science-pack", 2}
         },
         time = 20
@@ -150,10 +156,10 @@ local tech7 = {
         count = 400,
         ingredients =
         {
-            {"science-pack-1",1},
-            {"science-pack-2",1},
-            {"science-pack-3",1},
-            {"military-science-pack",1},
+            {"automation-science-pack",1},
+            {"logistic-science-pack", 1},
+            {"chemical-science-pack", 1},
+            {"military-science-pack", 1},
             {"high-tech-science-pack", 1}
         },
         time = 20
