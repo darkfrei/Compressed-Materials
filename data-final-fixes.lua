@@ -21,8 +21,14 @@ local item_count = 0
 local compress_recipes, uncompress_recipes, compress_items = {}, {}, {}
 local tech_cat = {ores=1, items=2, tiles=3, ammo=4, entities=5, modules=6, equipment=7}
 
-local get_tech = function(tech) return "compression-"..tech_cat[tech] or 2 end
-
+function get_tech (tech) 
+  local tech_index = tech_cat[tech] or 2
+  if tech_index == 1 then -- no index "1" is supported from 0.17.23
+    return "compression"
+  end
+  return "compression-"..tech_index
+end
+  
 local get_ore = function (name)
     return name:find("^angels%-ore") or name:find("^angelsore") --or name:find("^ingot%-") or name:find("^processed%-")
 end
